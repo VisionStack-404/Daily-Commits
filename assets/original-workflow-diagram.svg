@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="420" viewBox="0 0 1400 420" role="img" aria-label="n8n daily commit workflow diagram">
+  <style>
+    .bg { fill: #0b1220; }
+    .card { fill:#0f1724; stroke:#1f2937; stroke-width:1.5; rx:12; }
+    .title { font:700 15px/1.1 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; fill:#e6eef8; }
+    .subtitle { font:500 12px/1.1 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; fill:#9aa7b8; }
+    .small { font:400 11px/1.1 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; fill:#94a3b8; }
+    .arrow { stroke:#475569; stroke-width:2; fill:none; marker-end:url(#arrowhead); }
+    .badge { font:700 11px/1 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; fill:#111827; }
+    .n8n-fill { fill:#ff7a00; } /* n8n-accent (orange) */
+    .github-fill { fill:#24292f; } /* GitHub dark */
+    .openai-fill { fill:#0ea5a4; } /* teal */
+    .node-accent { stroke-width:3; stroke-linejoin:round; }
+    .shadow { filter: drop-shadow(0 6px 14px rgba(2,6,23,0.6)); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0 0 L10 4 L0 8 z" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1400" height="420" rx="0" ry="0"/>
+
+  <!-- Schedule Trigger -->
+  <g transform="translate(40,40)" class="shadow">
+    <rect class="card" width="260" height="110" rx="12"/>
+    <circle cx="42" cy="55" r="28" class="n8n-fill"/>
+    <text x="90" y="48" class="title">⏰ Schedule Trigger</text>
+    <text x="90" y="72" class="subtitle">Interval (default: every 3 days)</text>
+    <rect x="90" y="84" width="140" height="18" rx="8" fill="#0b1220" stroke="#1f2937"/>
+    <text x="100" y="98" class="small">n8n node: scheduleTrigger</text>
+  </g>
+
+  <!-- Get a file (GitHub) -->
+  <g transform="translate(360,40)" class="shadow">
+    <rect class="card" width="260" height="110" rx="12"/>
+    <rect x="16" y="26" width="52" height="52" rx="8" class="github-fill"/>
+    <text x="90" y="48" class="title">📂 Get a file</text>
+    <text x="90" y="72" class="subtitle">GitHub — read <tspan font-weight='700'>Daily</tspan></text>
+    <rect x="90" y="84" width="140" height="18" rx="8" fill="#0b1220" stroke="#1f2937"/>
+    <text x="100" y="98" class="small">Set owner / repo / filePath / credential</text>
+    <!-- GitHub badge -->
+    <rect x="200" y="12" width="40" height="20" rx="6" fill="#ffffff" />
+    <text x="220" y="26" class="badge" text-anchor="middle">GitHub</text>
+  </g>
+
+  <!-- Extract from File -->
+  <g transform="translate(680,40)" class="shadow">
+    <rect class="card" width="260" height="110" rx="12"/>
+    <rect x="16" y="26" width="52" height="52" rx="8" fill="#475569"/>
+    <text x="90" y="48" class="title">🔎 Extract from File</text>
+    <text x="90" y="72" class="subtitle">Convert response → plain text</text>
+    <rect x="90" y="84" width="140" height="18" rx="8" fill="#0b1220" stroke="#1f2937"/>
+    <text x="100" y="98" class="small">Prepares input for AI Agent</text>
+  </g>
+
+  <!-- AI Agent -->
+  <g transform="translate(1000,18)" class="shadow">
+    <rect class="card" width="320" height="160" rx="12" stroke="#1f2937"/>
+    <circle cx="46" cy="74" r="34" class="openai-fill"/>
+    <text x="96" y="58" class="title">🤖 AI Agent</text>
+    <text x="96" y="82" class="subtitle">System prompt: append one dated entry</text>
+    <text x="96" y="100" class="small">Model: <tspan font-weight='700'>gpt-5-mini</tspan> — Temp 0.0–0.3</text>
+    <rect x="96" y="108" width="200" height="22" rx="8" fill="#0b1220" stroke="#1f2937"/>
+    <text x="106" y="124" class="small">Return only full file content (no commentary)</text>
+    <!-- n8n badge -->
+    <rect x="230" y="12" width="66" height="20" rx="6" fill="#ff7a00" />
+    <text x="263" y="26" class="badge" text-anchor="middle" fill="#fff">n8n</text>
+  </g>
+
+  <!-- Convert to File -->
+  <g transform="translate(620,220)" class="shadow">
+    <rect class="card" width="260" height="100" rx="12"/>
+    <rect x="16" y="20" width="52" height="52" rx="8" fill="#475569"/>
+    <text x="90" y="48" class="title">🧾 Convert to File</text>
+    <text x="90" y="72" class="subtitle">Create binary/text payload</text>
+    <text x="90" y="92" class="small">Source: AI Agent output</text>
+  </g>
+
+  <!-- Edit a file (GitHub commit) -->
+  <g transform="translate(960,220)" class="shadow">
+    <rect class="card" width="320" height="100" rx="12"/>
+    <rect x="16" y="20" width="52" height="52" rx="8" class="github-fill"/>
+    <text x="92" y="48" class="title">✏️ Edit a file</text>
+    <text x="92" y="72" class="subtitle">GitHub — commit updated <tspan font-weight='700'>Daily</tspan></text>
+    <text x="92" y="92" class="small">Commit msg: docs: update Daily (automated)</text>
+  </g>
+
+  <!-- Arrows -->
+  <path class="arrow" d="M300 95 L360 95" marker-end="url(#arrowhead)"/>
+  <path class="arrow" d="M620 95 L680 95" />
+  <path class="arrow" d="M940 95 L1000 95" />
+  <path class="arrow" d="M1160 180 L1160 220 L900 220" />
+
+  <path class="arrow" d="M820 240 L960 240" />
+  <path class="arrow" d="M1180 260 L1180 240" />
+
+  <!-- Footer notes -->
+  <g transform="translate(40,360)">
+    <text class="small" x="0" y="0">Tip: edit node settings in n8n Editor — attach credentials from the Credentials manager; avoid committing tokens to repo.</text>
+  </g>
+</svg>
