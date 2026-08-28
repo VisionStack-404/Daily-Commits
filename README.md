@@ -1,65 +1,114 @@
-# n8n — Daily Commit Workflow
+# Daily Commit — n8n Workflow (Professional Setup Guide)
 
-This repository contains an n8n workflow that updates a "Daily" file in a GitHub repository on a schedule. It was sanitized before publishing to remove credential IDs and webhook identifiers. Use this as a small demo / mini-project showing how to automate periodic updates to a text file in a GitHub repo using n8n and an LLM.
+A clear, step-by-step guide to import, configure, test, and secure the n8n workflow that automatically updates a `Daily` file in a GitHub repository on a schedule.
 
-Files included
-- n8n/Github-actions-2026-08-28.sanitized.json — the exported workflow JSON with credential placeholders.
-- assets/workflow-diagram.svg — a simple SVG diagram visualizing the workflow nodes and connections.
+Repository contents
+- n8n/Github-actions-2026-08-28.sanitized.json — exported n8n workflow (credential placeholders).
+- assets/workflow-diagram.svg — visual diagram of the workflow.
+- README.md — this guide.
 
-What this workflow does (high level)
-1. Schedule Trigger (every 3 days) — starts the workflow on a schedule.
-2. Get a file — reads a file named `Daily` from a GitHub repository.
-3. Extract from File — extracts the text content.
-4. AI Agent — calls a language model with system instructions to append a new daily entry (without modifying earlier entries).
-5. Convert to File — converts the model output to a file payload.
-6. Edit a file — writes the updated `Daily` file back to the GitHub repo with a commit message.
+Overview
+This workflow automates a periodic update to a text file named `Daily` in a GitHub repository. It does so by:
+1. Triggering on a schedule.
+2. Reading the current `Daily` file from a GitHub repo.
+3. Sending the content to a language model agent to append a new daily entry.
+4. Converting the agent output to a file and committing the updated file back to GitHub.
 
-Security notes (important)
-- This public copy removes sensitive webhook IDs and credential identifiers. Do NOT paste real API keys, personal access tokens, or webhook secrets into files you publish.
-- In n8n, credentials (GitHub, OpenAI) should be created using the n8n credentials manager and NOT stored in the workflow JSON in plaintext.
-- Replace placeholders in the imported workflow with your own credentials inside your private n8n instance.
+Prerequisites
+- n8n (self-hosted or n8n.cloud) with Editor access.
+- A GitHub account with a repository you can write to (target repo for the `Daily` file).
+- A GitHub Personal Access Token (PAT) or OAuth app configured with repo permissions.
+- An OpenAI API key (or another LLM provider supported by your n8n instance).
 
-Quickstart — how to run locally or in n8n.cloud
-1. Clone this repo:
+High-level steps (what you'll do)
+1. Clone this repository locally (optional).
+2. Import the sanitized workflow JSON into n8n Editor.
+3. Create credentials inside n8n (GitHub and OpenAI).
+4. Wire the credentials and target repo/file into the workflow nodes.
+5. Run tests and validate behavior.
+6. Activate the workflow to enable the schedule.
+
+Step-by-step setup (detailed)
+
+1) Clone the repo (optional)
 
    git clone https://github.com/VisionStack-404/daily-commit.git
    cd daily-commit
 
-2. Open n8n (local or n8n.cloud) and import the workflow JSON:
-   - In n8n Editor, click the folder icon (top-left) → Import → choose `n8n/Github-actions-2026-08-28.sanitized.json`.
+2) Review the files
+- Open `n8n/Github-actions-2026-08-28.sanitized.json` to inspect the nodes and logic.
+- View `assets/workflow-diagram.svg` for a visual layout of the nodes and connections.
 
-3. Create credentials in n8n:
-   - GitHub: create a GitHub API credential using a Personal Access Token (repo scope) or connect via OAuth.
-   - OpenAI: create an OpenAI credential with your API key.
+3) Import the workflow into n8n
+- Open the n8n Editor at your instance (local or n8n.cloud).
+- From the top-left menu: Import → choose file → upload `n8n/Github-actions-2026-08-28.sanitized.json`.
+- A workflow named "Github actions" (or similar) will appear in the editor.
 
-4. Update the workflow nodes (inside Editor):
-   - Open the `Get a file` and `Edit a file` nodes and set the repository/owner and file path if you want to target a different repo or path.
-   - In any node shown with a credential placeholder, select the credentials you created in step 3.
+4) Create and configure n8n credentials
+- GitHub credential (recommended: Personal Access Token)
+  - Create a PAT with scope: repo (or at least repo:status, repo_deployment, public_repo, repo:invite as needed).
+  - In n8n: Settings → Credentials → Create new credential → choose GitHub and paste the PAT.
+- OpenAI credential
+  - Copy your OpenAI API key (or equivalent provider key).
+  - In n8n: Create an OpenAI credential and paste the key.
 
-5. Sanity check and test:
-   - Run the workflow manually using the "Execute workflow" button to test behavior before enabling the schedule.
-   - Confirm the `Daily` file was updated in the target repository.
+5) Update workflow node settings (critical)
+- Get a file (GitHub node)
+  - Set Owner: your GitHub username or organization.
+  - Repository: the repository that contains the `Daily` file.
+  - File path: `Daily` (or change to `daily.md` or `diary/Daily` if you prefer a path).
+  - Credential: select the GitHub credential you created.
+- Edit a file (GitHub node)
+  - Ensure the target repository and file path match your intent.
+  - Commit message: customize to your preference (e.g., "docs: update Daily with automated entry").
+  - Credential: select your GitHub credential.
+- OpenAI Chat Model / AI Agent node
+  - Select the OpenAI credential (or other LLM credential) you created.
+  - Review the system prompt included in the node options — this controls how entries are appended and must be preserved for the desired behavior.
 
-6. Enable schedule (optional):
-   - Once tested, activate the workflow and it will run on the configured schedule.
+6) Sanity check and test run
+- Save the workflow in the n8n Editor.
+- With the workflow open, use "Execute workflow" (manual run) to test.
+- Monitor the execution logs at the bottom panel. Look for:
+  - Successful read of the target file.
+  - AI Agent returning updated content.
+  - Successful write/commit back to the repository.
+- Check the GitHub repository to confirm the `Daily` file was updated and a new commit appears.
 
-How to restore webhook/webhookId fields (if you need them)
-- If you previously used webhooks in n8n for real-time triggers, do not paste webhook IDs into a public commit. Re-create the credential or webhook in your private n8n instance and let n8n populate the webhookId automatically.
+7) Enable schedule and monitoring
+- If the manual test succeeds, activate the workflow in n8n to enable the schedule trigger.
+- Check n8n executions or set up alerts (optional) to notify you on failures.
 
-Diagram and explanation
-- See `assets/workflow-diagram.svg` for a visual overview of the nodes and connections.
+Security and privacy best practices
+- This repository contains a sanitized workflow; real credential values were removed. Do not publish PATs, API keys, or webhook secrets in public repositories.
+- Use n8n's credential manager — do not insert secrets directly into workflow JSON when possible.
+- For production, prefer an OAuth app for GitHub or a machine user with a scoped PAT limited to required permissions.
+- Rotate credentials regularly.
 
-Customization ideas
-- Change schedule frequency (Schedule Trigger node) to daily or hourly.
-- Use a different prompt or logic in the AI Agent node to modify the style of entries.
-- Write to a dated filename instead of a single `Daily` file.
+Troubleshooting (common issues)
+- Permission denied when reading or writing the file: confirm the PAT has repo write permissions and the owner/repo fields are correct.
+- LLM errors or timeouts: check the OpenAI (or provider) usage limits and API key validity.
+- Workflow import errors: ensure you imported the correct JSON file and your n8n version is compatible with the node types used.
 
-License
-- This repository is provided as-is for demonstration. Add a license file if you want to reuse this in other projects.
+Optional enhancements
+- Change the schedule frequency: open the Schedule Trigger node and edit the interval (e.g., daily or hourly).
+- Use a dated filename to keep historical logs (e.g., `Daily-2026-08-28.md`) instead of a single `Daily` file.
+- Store entries in a dedicated folder and create a simple index.
+- Add automatic pull request creation instead of direct push if you want review before merging.
 
-If you want, I can now:
-- Commit the exact (unsanitized) workflow JSON instead (not recommended public).
-- Create a branch instead of committing to `main`.
-- Add a short example `Daily` file and a sample execution log.
+Restoring webhook/webhookId or original credential IDs (if you need them)
+- If you used webhooks and need the webhookId value, re-create the webhook inside your private n8n instance rather than pasting webhook IDs into public files.
+- When you recreate credentials in n8n, n8n will populate internal IDs automatically; you do not need to edit the JSON to reference them.
 
-Tell me which of these you want next, or I can continue with further changes automatically.
+Files in this repo to reference
+- n8n/Github-actions-2026-08-28.sanitized.json — import to n8n.
+- assets/workflow-diagram.svg — visual overview.
+
+Need me to do this for you?
+I can perform any of the following on your behalf:
+- Create a sample `Daily` file in this repository so new users have a test target.
+- Add a CONTRIBUTING.md or further documentation for maintainers.
+- Create a branch for changes instead of updating `main` directly.
+- Make the repository private.
+
+If you want me to commit one of those changes now, tell me which and I will proceed.
