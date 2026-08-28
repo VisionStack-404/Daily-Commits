@@ -1,0 +1,54 @@
+<svg width="1200" height="260" viewBox="0 0 1200 260" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .node { fill: #1f2937; stroke: #111827; stroke-width:2; rx:10; }
+    .text { font-family: Inter, Arial, sans-serif; fill:#ffffff; font-size:14px; }
+    .small { font-size:12px; fill:#cbd5e1; }
+    .arrow { stroke:#9ca3af; stroke-width:2; fill:none; marker-end:url(#arrowhead);} 
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af" />
+    </marker>
+  </defs>
+
+  <!-- Nodes -->
+  <rect x="20" y="30" width="160" height="60" class="node" rx="8"/>
+  <text x="100" y="55" text-anchor="middle" class="text">Schedule Trigger</text>
+  <text x="100" y="72" text-anchor="middle" class="small">every 3 days</text>
+
+  <rect x="220" y="30" width="140" height="60" class="node" rx="8"/>
+  <text x="290" y="55" text-anchor="middle" class="text">Get a file</text>
+  <text x="290" y="72" text-anchor="middle" class="small">GitHub: read Daily</text>
+
+  <rect x="400" y="30" width="160" height="60" class="node" rx="8"/>
+  <text x="480" y="55" text-anchor="middle" class="text">Extract from File</text>
+  <text x="480" y="72" text-anchor="middle" class="small">parse text</text>
+
+  <rect x="620" y="10" width="220" height="100" class="node" rx="8"/>
+  <text x="730" y="46" text-anchor="middle" class="text">AI Agent</text>
+  <text x="730" y="66" text-anchor="middle" class="small">system prompt + model</text>
+
+  <rect x="880" y="30" width="160" height="60" class="node" rx="8"/>
+  <text x="960" y="55" text-anchor="middle" class="text">Convert to File</text>
+  <text x="960" y="72" text-anchor="middle" class="small">create binary</text>
+
+  <rect x="1080" y="30" width="100" height="60" class="node" rx="8"/>
+  <text x="1130" y="55" text-anchor="middle" class="text">Edit a file</text>
+  <text x="1130" y="72" text-anchor="middle" class="small">GitHub: commit</text>
+
+  <!-- OpenAI model node (connected to AI Agent) -->
+  <circle cx="515" cy="180" r="36" fill="#0ea5a4" />
+  <text x="515" y="186" text-anchor="middle" class="text">OpenAI</text>
+  <text x="515" y="204" text-anchor="middle" class="small">gpt-5-mini</text>
+
+  <!-- Arrows -->
+  <path d="M180 60 L220 60" class="arrow" />
+  <path d="M360 60 L400 60" class="arrow" />
+  <path d="M560 60 L620 60" class="arrow" />
+  <path d="M840 60 L880 60" class="arrow" />
+  <path d="M1040 60 L1080 60" class="arrow" />
+
+  <!-- connection from OpenAI to AI Agent -->
+  <path d="M515 144 L515 110 L730 110" class="arrow" />
+
+</svg>

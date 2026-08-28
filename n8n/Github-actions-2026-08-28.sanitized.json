@@ -1,0 +1,599 @@
+{
+  "updatedAt": "2026-08-28T16:41:52.762Z",
+  "createdAt": "2026-08-28T14:53:09.677Z",
+  "id": "qxrJxTLqCF1m51gC",
+  "name": "Github actions",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 3,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "b139493b-99a6-4c45-b6b7-454697b71f5a",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/VisionStack-404",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "AI-DEBATE-CHAMBER",
+          "mode": "list",
+          "cachedResultName": "AI-DEBATE-CHAMBER",
+          "cachedResultUrl": "https://github.com/VisionStack-404/AI-DEBATE-CHAMBER"
+        },
+        "filePath": "Daily",
+        "additionalParameters": {}
+      },
+      "id": "62b637cb-c516-4899-8f2e-b02bdce189cb",
+      "name": "Get a file",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "<REDACTED_GITHUB_CREDENTIAL_ID>",
+          "name": "<REDACTED_GITHUB_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"Current README.md content:\\n\\n\" + $json.content }}",
+        "options": {
+          "systemMessage": "=Read the existing daily learning file content provided by the previous node.\n\nYour task is to maintain this file as a clean daily learning and progress log.\n\n1. Preserve all existing entries exactly as they are.\n2. Do NOT delete, rewrite, or modify previous entries.\n3. Add a new entry for today's date at the end of the file.\n4. Today's progress:\nContinue documenting my daily software engineering, computer science, DSA, machine learning, and GitHub learning progress.\n5. Keep the format professional, simple, and consistent with the existing file.\n6. Do not invent any projects, achievements, technologies, tasks, or facts.\n7. If an entry for today's date already exists, do not create a duplicate.\n8. Return ONLY the complete updated daily learning file content.\n9. Do NOT include explanations.\n10. Do NOT use a markdown code block.\n\nExisting daily learning file content:\n\n{{ $json.text }}\n\nToday's date:\n\n{{ $now.format('yyyy-MM-dd') }}"
+        }
+      },
+      "id": "f8b66f07-6b9d-4dad-b928-c3024d8de5d6",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "c50244d6-2a23-4d24-af84-efc3edf69c07",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        208
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "<REDACTED_OPENAI_CREDENTIAL_ID>",
+          "name": "<REDACTED_OPENAI_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "output",
+        "binaryPropertyName": "Data",
+        "options": {}
+      },
+      "id": "9a470c23-49c2-4d8e-a16d-e74861fdbc28",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/VisionStack-404",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "AI-DEBATE-CHAMBER",
+          "mode": "list",
+          "cachedResultName": "AI-DEBATE-CHAMBER",
+          "cachedResultUrl": "https://github.com/VisionStack-404/AI-DEBATE-CHAMBER"
+        },
+        "filePath": "Daily",
+        "binaryData": true,
+        "binaryPropertyName": "Data",
+        "commitMessage": "docs: update Daily with daily learning progress"
+      },
+      "id": "3eccb1cc-1313-4daf-a154-3aa81150c3d3",
+      "name": "Edit a file",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1264,
+        0
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "<REDACTED_GITHUB_CREDENTIAL_ID>",
+          "name": "<REDACTED_GITHUB_CREDENTIAL_NAME>"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "b2c6da48-d239-456c-9072-b85cdddd13b7",
+      "name": "Extract from File"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Edit a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        "days:3"
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "425b2153-73df-4a0a-840a-632ec1b8be72",
+  "activeVersionId": "425b2153-73df-4a0a-840a-632ec1b8be72",
+  "versionCounter": 83,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "parentFolder": null,
+  "activeVersion": {
+    "updatedAt": "2026-08-28T16:42:49.000Z",
+    "createdAt": "2026-08-28T16:41:52.765Z",
+    "versionId": "425b2153-73df-4a0a-840a-632ec1b8be72",
+    "workflowId": "qxrJxTLqCF1m51gC",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "daysInterval": 3,
+                "triggerAtMinute": 30
+              }
+            ]
+          }
+        },
+        "id": "b139493b-99a6-4c45-b6b7-454697b71f5a",
+        "name": "Schedule Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "value": "https://github.com/VisionStack-404",
+            "mode": "url"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "AI-DEBATE-CHAMBER",
+            "mode": "list",
+            "cachedResultName": "AI-DEBATE-CHAMBER",
+            "cachedResultUrl": "https://github.com/VisionStack-404/AI-DEBATE-CHAMBER"
+          },
+          "filePath": "Daily",
+          "additionalParameters": {}
+        },
+        "id": "62b637cb-c516-4899-8f2e-b02bdce189cb",
+        "name": "Get a file",
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          224,
+          0
+        ],
+        "credentials": {
+          "githubApi": {
+            "id": "<REDACTED_GITHUB_CREDENTIAL_ID>",
+            "name": "<REDACTED_GITHUB_CREDENTIAL_NAME>"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ \"Current README.md content:\\n\\n\" + $json.content }}",
+          "options": {
+            "systemMessage": "=Read the existing daily learning file content provided by the previous node.\n\nYour task is to maintain this file as a clean daily learning and progress log.\n\n1. Preserve all existing entries exactly as they are.\n2. Do NOT delete, rewrite, or modify previous entries.\n3. Add a new entry for today's date at the end of the file.\n4. Today's progress:\nContinue documenting my daily software engineering, computer science, DSA, machine learning, and GitHub learning progress.\n5. Keep the format professional, simple, and consistent with the existing file.\n6. Do not invent any projects, achievements, technologies, tasks, or facts.\n7. If an entry for today's date already exists, do not create a duplicate.\n8. Return ONLY the complete updated daily learning file content.\n9. Do NOT include explanations.\n10. Do NOT use a markdown code block.\n\nExisting daily learning file content:\n\n{{ $json.text }}\n\nToday's date:\n\n{{ $now.format('yyyy-MM-dd') }}"
+          }
+        },
+        "id": "f8b66f07-6b9d-4dad-b928-c3024d8de5d6",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          672,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-5-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "id": "c50244d6-2a23-4d24-af84-efc3edf69c07",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          304,
+          208
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "<REDACTED_OPENAI_CREDENTIAL_ID>",
+            "name": "<REDACTED_OPENAI_CREDENTIAL_NAME>"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "toText",
+          "sourceProperty": "output",
+          "binaryPropertyName": "Data",
+          "options": {}
+        },
+        "id": "9a470c23-49c2-4d8e-a16d-e74861fdbc28",
+        "name": "Convert to File",
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1,
+        "position": [
+          1040,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "edit",
+          "owner": {
+            "__rl": true,
+            "value": "https://github.com/VisionStack-404",
+            "mode": "url"
+          },
+          "repository": {
+            "__rl": true,
+            "value": "AI-DEBATE-CHAMBER",
+            "mode": "list",
+            "cachedResultName": "AI-DEBATE-CHAMBER",
+            "cachedResultUrl": "https://github.com/VisionStack-404/AI-DEBATE-CHAMBER"
+          },
+          "filePath": "Daily",
+          "binaryData": true,
+          "binaryPropertyName": "Data",
+          "commitMessage": "docs: update Daily with daily learning progress"
+        },
+        "id": "3eccb1cc-1313-4daf-a154-3aa81150c3d3",
+        "name": "Edit a file",
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1.1,
+        "position": [
+          1264,
+          0
+        ],
+        "credentials": {
+          "githubApi": {
+            "id": "<REDACTED_GITHUB_CREDENTIAL_ID>",
+            "name": "<REDACTED_GITHUB_CREDENTIAL_NAME>"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "text",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          464,
+          0
+        ],
+        "id": "b2c6da48-d239-456c-9072-b85cdddd13b7",
+        "name": "Extract from File"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a file": {
+        "main": [
+          [
+            {
+              "node": "Extract from File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Convert to File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "node": "Edit a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
+    },
+    "staticData": {
+      "node:Schedule Trigger": {
+        "recurrenceRules": [
+          null
+        ],
+        "recurrenceRuleSignatures": [
+          "days:3"
+        ]
+      }
+    },
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "nodeGroups": [],
+    "pinData": {},
+    "versionId": "425b2153-73df-4a0a-840a-632ec1b8be72",
+    "activeVersionId": "425b2153-73df-4a0a-840a-632ec1b8be72",
+    "versionCounter": 83,
+    "triggerCount": 1,
+    "sourceWorkflowId": null,
+    "tags": [],
+    "parentFolder": null
+  },
+  "homeProject": {
+    "id": "6UauRyHMOZLwTiLN",
+    "type": "personal",
+    "name": "Vision   <visionmax157@gmail.com>",
+    "icon": null
+  },
+  "sharedWithProjects": [],
+  "usedCredentials": [
+    {
+      "id": "<REDACTED_GITHUB_CREDENTIAL_ID>",
+      "name": "<REDACTED_GITHUB_CREDENTIAL_NAME>",
+      "type": "githubApi",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "6UauRyHMOZLwTiLN",
+        "type": "personal",
+        "name": "Vision   <visionmax157@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    },
+    {
+      "id": "<REDACTED_GITHUB_CREDENTIAL_ID_2>",
+      "name": "<REDACTED_GITHUB_CREDENTIAL_NAME_2>",
+      "type": "githubApi",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "6UauRyHMOZLwTiLN",
+        "type": "personal",
+        "name": "Vision   <visionmax157@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    },
+    {
+      "id": "<REDACTED_OPENAI_CREDENTIAL_ID>",
+      "name": "<REDACTED_OPENAI_CREDENTIAL_NAME>",
+      "type": "openAiApi",
+      "currentUserHasAccess": true,
+      "homeProject": {
+        "id": "6UauRyHMOZLwTiLN",
+        "type": "personal",
+        "name": "Vision   <visionmax157@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    }
+  ],
+  "scopes": [
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "checksum": "c83c0a63384d8d01a3805614219aa4b2279c9e4b9d9352053b9c0cc50775da7d"
+}
